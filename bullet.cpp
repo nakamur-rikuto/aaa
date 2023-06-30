@@ -1,6 +1,6 @@
 //=============================================================================
 //
-// ƒoƒŒƒbƒgˆ— [bullet.cpp]
+// ãƒãƒ¬ãƒƒãƒˆå‡¦ç† [bullet.cpp]
 // Author : 
 //
 //=============================================================================
@@ -12,45 +12,45 @@
 #include "sound.h"
 
 //*****************************************************************************
-// ƒ}ƒNƒ’è‹`
+// ãƒžã‚¯ãƒ­å®šç¾©
 //*****************************************************************************
-#define TEXTURE_WIDTH				(100000/2)	// ƒLƒƒƒ‰ƒTƒCƒY
+#define TEXTURE_WIDTH				(100/2)	// ã‚­ãƒ£ãƒ©ã‚µã‚¤ã‚º
 #define TEXTURE_HEIGHT				(100/2)	// 
-#define TEXTURE_MAX					(1)		// ƒeƒNƒXƒ`ƒƒ‚Ì”
+#define TEXTURE_MAX					(1)		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°
 
-#define TEXTURE_PATTERN_DIVIDE_X	(1)		// ƒAƒjƒƒpƒ^[ƒ“‚ÌƒeƒNƒXƒ`ƒƒ“à•ªŠ„”iX)
-#define TEXTURE_PATTERN_DIVIDE_Y	(1)		// ƒAƒjƒƒpƒ^[ƒ“‚ÌƒeƒNƒXƒ`ƒƒ“à•ªŠ„”iY)
-#define ANIM_PATTERN_NUM			(TEXTURE_PATTERN_DIVIDE_X*TEXTURE_PATTERN_DIVIDE_Y)	// ƒAƒjƒ[ƒVƒ‡ƒ“ƒpƒ^[ƒ“”
-#define ANIM_WAIT					(4)		// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚í‚éWait’l
-
-
-//*****************************************************************************
-// ƒvƒƒgƒ^ƒCƒvéŒ¾
-//*****************************************************************************
+#define TEXTURE_PATTERN_DIVIDE_X	(1)		// ã‚¢ãƒ‹ãƒ¡ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£å†…åˆ†å‰²æ•°ï¼ˆX)
+#define TEXTURE_PATTERN_DIVIDE_Y	(1)		// ã‚¢ãƒ‹ãƒ¡ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£å†…åˆ†å‰²æ•°ï¼ˆY)
+#define ANIM_PATTERN_NUM			(TEXTURE_PATTERN_DIVIDE_X*TEXTURE_PATTERN_DIVIDE_Y)	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³æ•°
+#define ANIM_WAIT					(4)		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ã‚ã‚‹Waitå€¤
 
 
 //*****************************************************************************
-// ƒOƒ[ƒoƒ‹•Ï”
+// ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 //*****************************************************************************
-static ID3D11Buffer				*g_VertexBuffer = NULL;				// ’¸“_î•ñ
-static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ƒeƒNƒXƒ`ƒƒî•ñ
+
+
+//*****************************************************************************
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+//*****************************************************************************
+static ID3D11Buffer				*g_VertexBuffer = NULL;				// é ‚ç‚¹æƒ…å ±
+static ID3D11ShaderResourceView	*g_Texture[TEXTURE_MAX] = { NULL };	// ãƒ†ã‚¯ã‚¹ãƒãƒ£æƒ…å ±
 
 static char *g_TexturName[] = {
 	"data/TEXTURE/bullet00.png",
 };
 
-static BOOL		g_Load = FALSE;			// ‰Šú‰»‚ðs‚Á‚½‚©‚Ìƒtƒ‰ƒO
-static BULLET	g_Bullet[BULLET_MAX];	// ƒoƒŒƒbƒg\‘¢‘Ì
+static BOOL		g_Load = FALSE;			// åˆæœŸåŒ–ã‚’è¡Œã£ãŸã‹ã®ãƒ•ãƒ©ã‚°
+static BULLET	g_Bullet[BULLET_MAX];	// ãƒãƒ¬ãƒƒãƒˆæ§‹é€ ä½“
 
 
 //=============================================================================
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //=============================================================================
 HRESULT InitBullet(void)
 {
 	ID3D11Device *pDevice = GetDevice();
 
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	for (int i = 0; i < TEXTURE_MAX; i++)
 	{
 		g_Texture[i] = NULL;
@@ -63,7 +63,7 @@ HRESULT InitBullet(void)
 	}
 
 
-	// ’¸“_ƒoƒbƒtƒ@¶¬
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -73,10 +73,10 @@ HRESULT InitBullet(void)
 	GetDevice()->CreateBuffer(&bd, NULL, &g_VertexBuffer);
 
 
-	// ƒoƒŒƒbƒg\‘¢‘Ì‚Ì‰Šú‰»
+	// ãƒãƒ¬ãƒƒãƒˆæ§‹é€ ä½“ã®åˆæœŸåŒ–
 	for (int i = 0; i < BULLET_MAX; i++)
 	{
-		g_Bullet[i].use   = FALSE;			// –¢Žg—pi”­ŽË‚³‚ê‚Ä‚¢‚È‚¢’ej
+		g_Bullet[i].use   = FALSE;			// æœªä½¿ç”¨ï¼ˆç™ºå°„ã•ã‚Œã¦ã„ãªã„å¼¾ï¼‰
 		g_Bullet[i].w     = TEXTURE_WIDTH;
 		g_Bullet[i].h     = TEXTURE_HEIGHT;
 		g_Bullet[i].pos   = XMFLOAT3(300, 300.0f, 0.0f);
@@ -86,7 +86,7 @@ HRESULT InitBullet(void)
 		g_Bullet[i].countAnim = 0;
 		g_Bullet[i].patternAnim = 0;
 
-		g_Bullet[i].move = XMFLOAT3(0.0f, -BULLET_SPEED, 0.0f);	// ˆÚ“®—Ê‚ð‰Šú‰»
+		g_Bullet[i].move = XMFLOAT3(0.0f, -BULLET_SPEED, 0.0f);	// ç§»å‹•é‡ã‚’åˆæœŸåŒ–
 	}
 	
 	g_Load = TRUE;
@@ -94,7 +94,7 @@ HRESULT InitBullet(void)
 }
 
 //=============================================================================
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //=============================================================================
 void UninitBullet(void)
 {
@@ -118,52 +118,52 @@ void UninitBullet(void)
 }
 
 //=============================================================================
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 //=============================================================================
 void UpdateBullet(void)
 {
-	int bulletCount = 0;				// ˆ—‚µ‚½ƒoƒŒƒbƒg‚Ì”
+	int bulletCount = 0;				// å‡¦ç†ã—ãŸãƒãƒ¬ãƒƒãƒˆã®æ•°
 
 	for (int i = 0; i < BULLET_MAX; i++)
 	{
-		if (g_Bullet[i].use == TRUE)	// ‚±‚ÌƒoƒŒƒbƒg‚ªŽg‚í‚ê‚Ä‚¢‚éH
+		if (g_Bullet[i].use == TRUE)	// ã“ã®ãƒãƒ¬ãƒƒãƒˆãŒä½¿ã‚ã‚Œã¦ã„ã‚‹ï¼Ÿ
 		{								// Yes
-			// ƒAƒjƒ[ƒVƒ‡ƒ“  
+			// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³  
 			g_Bullet[i].countAnim++;
 			if ((g_Bullet[i].countAnim % ANIM_WAIT) == 0)
 			{
-				// ƒpƒ^[ƒ“‚ÌØ‚è‘Ö‚¦
+				// ãƒ‘ã‚¿ãƒ¼ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
 				g_Bullet[i].patternAnim = (g_Bullet[i].patternAnim + 1) % ANIM_PATTERN_NUM;
 			}
 
-			// ƒoƒŒƒbƒg‚ÌˆÚ“®ˆ—
+			// ãƒãƒ¬ãƒƒãƒˆã®ç§»å‹•å‡¦ç†
 			XMVECTOR pos  = XMLoadFloat3(&g_Bullet[i].pos);
 			XMVECTOR move = XMLoadFloat3(&g_Bullet[i].move);
 			pos += move;
 			XMStoreFloat3(&g_Bullet[i].pos, pos);
 
-			// ‰æ–ÊŠO‚Ü‚Åi‚ñ‚¾H
-			if (g_Bullet[i].pos.y < (-g_Bullet[i].h/2))		// Ž©•ª‚Ì‘å‚«‚³‚ðl—¶‚µ‚Ä‰æ–ÊŠO‚©”»’è‚µ‚Ä‚¢‚é
+			// ç”»é¢å¤–ã¾ã§é€²ã‚“ã ï¼Ÿ
+			if (g_Bullet[i].pos.y < (-g_Bullet[i].h/2))		// è‡ªåˆ†ã®å¤§ãã•ã‚’è€ƒæ…®ã—ã¦ç”»é¢å¤–ã‹åˆ¤å®šã—ã¦ã„ã‚‹
 			{
 				g_Bullet[i].use = FALSE;
 			}
-			if (g_Bullet[i].pos.y > (SCREEN_HEIGHT+ g_Bullet[i].h/2))	// Ž©•ª‚Ì‘å‚«‚³‚ðl—¶‚µ‚Ä‰æ–ÊŠO‚©”»’è‚µ‚Ä‚¢‚é
+			if (g_Bullet[i].pos.y > (SCREEN_HEIGHT+ g_Bullet[i].h/2))	// è‡ªåˆ†ã®å¤§ãã•ã‚’è€ƒæ…®ã—ã¦ç”»é¢å¤–ã‹åˆ¤å®šã—ã¦ã„ã‚‹
 			{
 				g_Bullet[i].use = FALSE;
 			}
 
-			// “–‚½‚è”»’èˆ—
+			// å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
 			ENEMY* enemy = GetEnemy();
 
 			for (int x = 0; x < ENEMY_MAX; x++)
 			{
-				// ¶‚«‚Ä‚éƒGƒlƒ~[‚¾‚¯”»’è‚ðs‚¤
+				// ç”Ÿãã¦ã‚‹ã‚¨ãƒãƒŸãƒ¼ã ã‘åˆ¤å®šã‚’è¡Œã†
 				if (enemy[x].use == TRUE)
 				{
-					// BB‚Ì”»’è‚ðs‚¤
+					// BBã®åˆ¤å®šã‚’è¡Œã†
 					if (CollisionBB(g_Bullet[i].pos, g_Bullet[i].w, g_Bullet[i].h, enemy[x].pos, enemy[x].w, enemy[x].h) == TRUE)
 					{
-						// ƒGƒlƒ~[‚ÆÚG‚µ‚½‚çÁ‚¦‚é
+						// ã‚¨ãƒãƒŸãƒ¼ã¨æŽ¥è§¦ã—ãŸã‚‰æ¶ˆãˆã‚‹
 						enemy[x].use = FALSE;
 						g_Bullet[i].use = FALSE;
 						AddScore(100);
@@ -183,22 +183,22 @@ void UpdateBullet(void)
 }
 
 //=============================================================================
-// •`‰æˆ—
+// æç”»å‡¦ç†
 //=============================================================================
 void DrawBullet(void)
 {
-	// ’¸“_ƒoƒbƒtƒ@Ý’è
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡è¨­å®š
 	UINT stride = sizeof(VERTEX_3D);
 	UINT offset = 0;
 	GetDeviceContext()->IASetVertexBuffers(0, 1, &g_VertexBuffer, &stride, &offset);
 
-	// ƒ}ƒgƒŠƒNƒXÝ’è
+	// ãƒžãƒˆãƒªã‚¯ã‚¹è¨­å®š
 	SetWorldViewProjection2D();
 
-	// ƒvƒŠƒ~ƒeƒBƒuƒgƒ|ƒƒWÝ’è
+	// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ãƒˆãƒãƒ­ã‚¸è¨­å®š
 	GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	// ƒ}ƒeƒŠƒAƒ‹Ý’è
+	// ãƒžãƒ†ãƒªã‚¢ãƒ«è¨­å®š
 	MATERIAL material;
 	ZeroMemory(&material, sizeof(material));
 	material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -206,30 +206,30 @@ void DrawBullet(void)
 
 	for (int i = 0; i < BULLET_MAX; i++)
 	{
-		if (g_Bullet[i].use == TRUE)		// ‚±‚ÌƒoƒŒƒbƒg‚ªŽg‚í‚ê‚Ä‚¢‚éH
+		if (g_Bullet[i].use == TRUE)		// ã“ã®ãƒãƒ¬ãƒƒãƒˆãŒä½¿ã‚ã‚Œã¦ã„ã‚‹ï¼Ÿ
 		{									// Yes
-			// ƒeƒNƒXƒ`ƒƒÝ’è
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š
 			GetDeviceContext()->PSSetShaderResources(0, 1, &g_Texture[g_Bullet[i].texNo]);
 
-			//ƒoƒŒƒbƒg‚ÌˆÊ’u‚âƒeƒNƒXƒ`ƒƒ[À•W‚ð”½‰f
-			float px = g_Bullet[i].pos.x;	// ƒoƒŒƒbƒg‚Ì•\Ž¦ˆÊ’uX
-			float py = g_Bullet[i].pos.y;	// ƒoƒŒƒbƒg‚Ì•\Ž¦ˆÊ’uY
-			float pw = g_Bullet[i].w;		// ƒoƒŒƒbƒg‚Ì•\Ž¦•
-			float ph = g_Bullet[i].h;		// ƒoƒŒƒbƒg‚Ì•\Ž¦‚‚³
+			//ãƒãƒ¬ãƒƒãƒˆã®ä½ç½®ã‚„ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼åº§æ¨™ã‚’åæ˜ 
+			float px = g_Bullet[i].pos.x;	// ãƒãƒ¬ãƒƒãƒˆã®è¡¨ç¤ºä½ç½®X
+			float py = g_Bullet[i].pos.y;	// ãƒãƒ¬ãƒƒãƒˆã®è¡¨ç¤ºä½ç½®Y
+			float pw = g_Bullet[i].w;		// ãƒãƒ¬ãƒƒãƒˆã®è¡¨ç¤ºå¹…
+			float ph = g_Bullet[i].h;		// ãƒãƒ¬ãƒƒãƒˆã®è¡¨ç¤ºé«˜ã•
 
-			float tw = 1.0f / TEXTURE_PATTERN_DIVIDE_X;	// ƒeƒNƒXƒ`ƒƒ‚Ì•
-			float th = 1.0f / TEXTURE_PATTERN_DIVIDE_Y;	// ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³
-			float tx = (float)(g_Bullet[i].patternAnim % TEXTURE_PATTERN_DIVIDE_X) * tw;	// ƒeƒNƒXƒ`ƒƒ‚Ì¶ãXÀ•W
-			float ty = (float)(g_Bullet[i].patternAnim / TEXTURE_PATTERN_DIVIDE_X) * th;	// ƒeƒNƒXƒ`ƒƒ‚Ì¶ãYÀ•W
+			float tw = 1.0f / TEXTURE_PATTERN_DIVIDE_X;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…
+			float th = 1.0f / TEXTURE_PATTERN_DIVIDE_Y;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•
+			float tx = (float)(g_Bullet[i].patternAnim % TEXTURE_PATTERN_DIVIDE_X) * tw;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å·¦ä¸ŠXåº§æ¨™
+			float ty = (float)(g_Bullet[i].patternAnim / TEXTURE_PATTERN_DIVIDE_X) * th;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å·¦ä¸ŠYåº§æ¨™
 
-			// ‚P–‡‚Ìƒ|ƒŠƒSƒ“‚Ì’¸“_‚ÆƒeƒNƒXƒ`ƒƒÀ•W‚ðÝ’è
+			// ï¼‘æžšã®ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ã‚’è¨­å®š
 			SetSpriteColorRotation(g_VertexBuffer, 
 				px, py, pw, ph, 
 				tx, ty, tw, th,
 				XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
 				g_Bullet[i].rot.z);
 
-			// ƒ|ƒŠƒSƒ“•`‰æ
+			// ãƒãƒªã‚´ãƒ³æç”»
 			GetDeviceContext()->Draw(4, 0);
 		}
 	}
@@ -238,7 +238,7 @@ void DrawBullet(void)
 
 
 //=============================================================================
-// ƒoƒŒƒbƒg\‘¢‘Ì‚Ìæ“ªƒAƒhƒŒƒX‚ðŽæ“¾
+// ãƒãƒ¬ãƒƒãƒˆæ§‹é€ ä½“ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 //=============================================================================
 BULLET *GetBullet(void)
 {
@@ -247,18 +247,18 @@ BULLET *GetBullet(void)
 
 
 //=============================================================================
-// ƒoƒŒƒbƒg‚Ì”­ŽËÝ’è
+// ãƒãƒ¬ãƒƒãƒˆã®ç™ºå°„è¨­å®š
 //=============================================================================
 void SetBullet(XMFLOAT3 pos)
 {
-	// ‚à‚µ–¢Žg—p‚Ì’e‚ª–³‚©‚Á‚½‚ç”­ŽË‚µ‚È‚¢( =‚±‚êˆÈãŒ‚‚Ä‚È‚¢‚Á‚ÄŽ– )
+	// ã‚‚ã—æœªä½¿ç”¨ã®å¼¾ãŒç„¡ã‹ã£ãŸã‚‰ç™ºå°„ã—ãªã„( =ã“ã‚Œä»¥ä¸Šæ’ƒã¦ãªã„ã£ã¦äº‹ )
 	for (int i = 0; i < BULLET_MAX; i++)
 	{
-		if (g_Bullet[i].use == FALSE)		// –¢Žg—pó‘Ô‚ÌƒoƒŒƒbƒg‚ðŒ©‚Â‚¯‚é
+		if (g_Bullet[i].use == FALSE)		// æœªä½¿ç”¨çŠ¶æ…‹ã®ãƒãƒ¬ãƒƒãƒˆã‚’è¦‹ã¤ã‘ã‚‹
 		{
-			g_Bullet[i].use = TRUE;			// Žg—pó‘Ô‚Ö•ÏX‚·‚é
-			g_Bullet[i].pos = pos;			// À•W‚ðƒZƒbƒg
-			return;							// 1”­ƒZƒbƒg‚µ‚½‚Ì‚ÅI—¹‚·‚é
+			g_Bullet[i].use = TRUE;			// ä½¿ç”¨çŠ¶æ…‹ã¸å¤‰æ›´ã™ã‚‹
+			g_Bullet[i].pos = pos;			// åº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
+			return;							// 1ç™ºã‚»ãƒƒãƒˆã—ãŸã®ã§çµ‚äº†ã™ã‚‹
 		}
 	}
 }
